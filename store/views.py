@@ -1,5 +1,6 @@
 from django.shortcuts import render ,redirect
-from .models import Product
+from .models import Product, Category
+
 from django.contrib.auth import login , logout , authenticate
 from django.contrib import messages
 from django.contrib.auth.models import User
@@ -8,6 +9,23 @@ from .forms import SignUpForm
 from django import forms
 
 # Create your views here.
+
+
+
+def category(request, foo):
+    # Replace Hyphens with Spaces
+    foo = foo.replace('-', ' ')
+    
+    try:
+        # Look Up The Category
+        category = Category.objects.get(name=foo)
+        products = Product.objects.filter(category=category)
+        return render(request, 'category.html', {'products': products, 'category': category})
+    except Category.DoesNotExist:
+        messages.error(request, "That Category Doesn't Exist!")
+        return redirect('home')
+
+        
 
 def product(request,pk):
     product= Product.objects.get(id=pk)
